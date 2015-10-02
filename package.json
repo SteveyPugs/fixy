@@ -1,0 +1,23 @@
+{
+  "name": "fixy",
+  "version": "0.1.0",
+  "description": "A fixed width parser",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SteveyPugs/fixy.git"
+  },
+  "author": "SteveyPugs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SteveyPugs/fixy/issues"
+  },
+  "homepage": "https://github.com/SteveyPugs/fixy",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.3.3"
+  }
+}

@@ -1,9 +1,9 @@
 var fixy = require("../index");
 var assert = require("assert");
 describe('Fixy Tests', function() {
-	describe('#parseFixedWidth()', function () {
+	describe('#parse()', function () {
 		it('should return correctly parse fixed width file', function () {
-			var test = fixy.parseFixedWidth({
+			var test = fixy.parse({
 				map:[{
 						name: "Age",
 						width: 2,

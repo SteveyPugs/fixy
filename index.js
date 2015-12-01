@@ -6,7 +6,6 @@ String.prototype.splice = function(idx, rem, str) {
     return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
 
-
 function isEmpty(obj) {
     for(var prop in obj) {
         if(obj.hasOwnProperty(prop))
@@ -53,7 +52,7 @@ function returnCol(row, map){
 	return parsed_row;
 }
 
-internals.parseFixedWidth = function(specs, file){
+internals.parse = function(specs, file){
 	var output = [];
 	try {
 		if(typeof(specs) !== "object")  throw "specs is not an array";

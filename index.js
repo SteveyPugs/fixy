@@ -1,5 +1,11 @@
 var internals = {};
 var fs = require("fs");
+var moment = require("moment");
+
+String.prototype.splice = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
+
 
 function isEmpty(obj) {
     for(var prop in obj) {
@@ -13,8 +19,32 @@ function returnCol(row, map){
 	var parsed_row = {};
 	for(var item in map){
 		switch(map[item].type){
-			case "d":
+			case "date":
+				if(map[item].inputformat){
+					parsed_row[map[item].name] = moment(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim(), map[item].inputformat).format(map[item].outputformat);
+				}
+				else{
+					parsed_row[map[item].name] = moment(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim()).format(map[item].outputformat);
+				}
+				break;
+			case "float":
+				var percision = 2;
+				if(map[item].percision){
+					percision = map[item].percision;
+				}
+				parsed_row[map[item].name] = parseFloat(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim().splice(map[item].width - percision, 0, "."));
+				break;
+			case "int":
 				parsed_row[map[item].name] = parseInt(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim());
+				break;
+			case "bool":
+				parsed_row[map[item].name] = false;
+				if(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim() === map[item].tVal){
+					parsed_row[map[item].name] = true;
+				}
+				break;
+			case "string":
+				parsed_row[map[item].name] = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
 				break;
 			default:
 				parsed_row[map[item].name] = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
@@ -35,7 +65,9 @@ internals.parseFixedWidth = function(specs, file){
 		if(file.indexOf("") !== -1){
 			file.splice(file.indexOf(""), 1);
 		}
+		var count = 1;
 		for(var i in file){
+			count = count + parseInt(i);
 			if(file[i].length === specs.options.fullwidth){
 				if(specs.options.skiplines !== null){
 					if(specs.options.skiplines.indexOf(parseInt(i) + 1) === -1){
@@ -47,6 +79,9 @@ internals.parseFixedWidth = function(specs, file){
 					var row = returnCol(file[i], specs.map);
 					output.push(row)
 				}
+			}
+			else{
+				throw "row " + count + " is incorrect length";
 			}
 		}
 		return output;

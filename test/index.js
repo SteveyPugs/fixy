@@ -8,27 +8,44 @@ describe('Fixy Tests', function() {
 						name: "Age",
 						width: 2,
 						start: 1,
-						type: "d"
+						type: "int"
 					},{
 						name: "Initial",
 						width: 3,
 						start: 3,
-						type: "s"
+						type: "string"
 					},{
-						name: "Sex",
-						width: 1,
+						name: "DateEntered",
+						width: 8,
 						start: 6,
-						type: "s"
+						type: "date",
+						inputformat: "YYYYMMDD",
+						outputformat: "YYYY-MM-DD"
+					},{
+						name: "IsBad",
+						width: 1,
+						start: 14,
+						type: "bool",
+						tVal: "Y",
+						fVal: "N"
+					},{
+						name: "Rating",
+						width: 3,
+						start: 15,
+						type: "float",
+						percision: 2
 					}],
 				options:{
-					fullwidth: 6,
+					fullwidth: 17,
 					skiplines: null
 				}
-			}, "30SJPM");
+			}, "30SJP20121231N920");
 			assert.deepEqual(test, [{
 				Age: 30,
 				Initial: 'SJP',
-				Sex: 'M'
+				DateEntered: "2012-12-31",
+				IsBad: false,
+				Rating: 9.2
 			}]);
 		});
 	});

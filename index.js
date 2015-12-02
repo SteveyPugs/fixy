@@ -17,36 +17,42 @@ function isEmpty(obj) {
 function returnCol(row, map){	
 	var parsed_row = {};
 	for(var item in map){
-		switch(map[item].type){
-			case "date":
-				if(map[item].inputformat){
-					parsed_row[map[item].name] = moment(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim(), map[item].inputformat).format(map[item].outputformat);
-				}
-				else{
-					parsed_row[map[item].name] = moment(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim()).format(map[item].outputformat);
-				}
-				break;
-			case "float":
-				var percision = 2;
-				if(map[item].percision){
-					percision = map[item].percision;
-				}
-				parsed_row[map[item].name] = parseFloat(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim().splice(map[item].width - percision, 0, "."));
-				break;
-			case "int":
-				parsed_row[map[item].name] = parseInt(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim());
-				break;
-			case "bool":
-				parsed_row[map[item].name] = false;
-				if(row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim() === map[item].tVal){
-					parsed_row[map[item].name] = true;
-				}
-				break;
-			case "string":
-				parsed_row[map[item].name] = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
-				break;
-			default:
-				parsed_row[map[item].name] = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
+		var value = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
+		if(value){
+			switch(map[item].type){
+				case "date":
+					if(map[item].inputformat){
+						parsed_row[map[item].name] = moment(value, map[item].inputformat).format(map[item].outputformat);
+					}
+					else{
+						parsed_row[map[item].name] = moment(value).format(map[item].outputformat);
+					}
+					break;
+				case "float":
+					var percision = 2;
+					if(map[item].percision){
+						percision = map[item].percision;
+					}
+					parsed_row[map[item].name] = parseFloat(value.splice(map[item].width - percision, 0, "."));
+					break;
+				case "int":
+					parsed_row[map[item].name] = parseInt(value);
+					break;
+				case "bool":
+					parsed_row[map[item].name] = false;
+					if(value === map[item].tVal){
+						parsed_row[map[item].name] = true;
+					}
+					break;
+				case "string":
+					parsed_row[map[item].name] = value;
+					break;
+				default:
+					parsed_row[map[item].name] = value;
+			}
+		}
+		else{
+			parsed_row[map[item].name] = null;
 		}
 	}
 	return parsed_row;

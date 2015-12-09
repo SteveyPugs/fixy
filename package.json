@@ -21,5 +21,13 @@
   },
   "devDependencies": {
     "mocha": "^2.3.3"
-  }
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "keywords": [
+    "Fixed",
+    "Format",
+    "Parser"
+  ]
 }

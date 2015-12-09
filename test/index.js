@@ -1,8 +1,8 @@
 var fixy = require("../index");
 var assert = require("assert");
-describe('Fixy Tests', function() {
-	describe('#parse()', function () {
-		it('should return correctly parse fixed width file', function () {
+describe("Fixy Tests", function() {
+	describe("#parse()", function () {
+		it("should return fixed-width-input as array(object)", function () {
 			var test = fixy.parse({
 				map:[{
 						name: "Age",
@@ -42,11 +42,32 @@ describe('Fixy Tests', function() {
 			}, "30SJP20121231N920");
 			assert.deepEqual(test, [{
 				Age: 30,
-				Initial: 'SJP',
+				Initial: "SJP",
 				DateEntered: "2012-12-31",
 				IsBad: false,
 				Rating: 9.2
 			}]);
+		});
+		it("should return fixed-width-input as csv-string", function () {
+			var test = fixy.parse({
+				map:[{
+					name: "Age",
+					width: 2,
+					start: 1,
+					type: "int"
+				},{
+					name: "Initial",
+					width: 3,
+					start: 3,
+					type: "string"
+				}],
+				options:{
+					fullwidth: 5,
+					skiplines: null,
+					format: "csv"
+				}
+			}, "30SJP\n30SJP");
+			assert.deepEqual(test, "\"Age\",\"Initial\"\n\"30\",\"SJP\"\n\"30\",\"SJP\"");
 		});
 	});
 });

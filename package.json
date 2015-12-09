@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
-    "moment": "^2.10.6"
+    "moment": "^2.10.6",
+    "nice-json2csv": "^0.2.0"
   },
   "devDependencies": {
     "mocha": "^2.3.3"

@@ -1,6 +1,7 @@
 var internals = {};
 var fs = require("fs");
 var moment = require("moment");
+var json2csv = require("nice-json2csv");
 
 String.prototype.splice = function(idx, rem, str) {
     return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
@@ -58,30 +59,30 @@ function returnCol(row, map){
 	return parsed_row;
 }
 
-internals.parse = function(specs, file){
+internals.parse = function(specs, input){
 	var output = [];
 	try {
 		if(typeof(specs) !== "object")  throw "specs is not an array";
 		if(isEmpty(specs)) throw "specs is empty";
 		if(isEmpty(specs.map)) throw "specs maps is empty";
 		if(isEmpty(specs.options)) throw "specs options is empty";
-		if(file === "") throw "file is empty";
-		var file = file.replace(/\r\n/g,'\n').split("\n")
-		if(file.indexOf("") !== -1){
-			file.splice(file.indexOf(""), 1);
+		if(input === "") throw "input is empty";
+		var split_input = input.replace(/\r\n/g,'\n').split("\n");
+		if(split_input.indexOf("") !== -1){
+			split_input.splice(split_input.indexOf(""), 1);
 		}
 		var count = 1;
-		for(var i in file){
+		for(var i in split_input){
 			count = count + parseInt(i);
-			if(file[i].length === specs.options.fullwidth){
+			if(split_input[i].length === specs.options.fullwidth){
 				if(specs.options.skiplines !== null){
 					if(specs.options.skiplines.indexOf(parseInt(i) + 1) === -1){
-						var row = returnCol(file[i], specs.map);
+						var row = returnCol(split_input[i], specs.map);
 						output.push(row)
 					}
 				}
 				else{
-					var row = returnCol(file[i], specs.map);
+					var row = returnCol(split_input[i], specs.map);
 					output.push(row)
 				}
 			}
@@ -89,7 +90,13 @@ internals.parse = function(specs, file){
 				throw "row " + count + " is incorrect length";
 			}
 		}
-		return output;
+		switch(specs.options.format){
+			case "csv":
+				return json2csv.convert(output);
+				break;
+			default:
+				return output;
+		}	
 	}
 	catch(err){
 		console.log(err);

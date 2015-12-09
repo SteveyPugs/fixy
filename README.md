@@ -22,7 +22,8 @@ Fixy is an npm module for parsing fixed formatted strings/files.
 		}],
 		options: {
 			fullwidth: 2,
-			skiplines: null
+			skiplines: null,
+			format: "json" //default
 		}
 	},"30ABC20151201Y950");
 
@@ -67,4 +68,4 @@ A map [array of objects] of the column names, width, starting point, type of val
 	
 - fullwidth = full length / width of row from start to end
 - skiplines = optional array of rows to be skipped. May be left null
-
+- format = defaults "json". Valid selections are: json, csv

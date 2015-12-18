@@ -92,7 +92,9 @@ internals.parse = function(specs, input){
 		}
 		switch(specs.options.format){
 			case "csv":
-				return Papa.unparse(output);
+				return Papa.unparse(output, {
+					newline: "\n"
+				});
 				break;
 			default:
 				return output;

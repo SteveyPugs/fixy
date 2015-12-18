@@ -67,7 +67,7 @@ describe("Fixy Tests", function() {
 					format: "csv"
 				}
 			}, "30SJP\n30SJP");
-			assert.deepEqual(test, "Age,Initial\r\n30,SJP\r\n30,SJP");
+			assert.deepEqual(test, "Age,Initial\n30,SJP\n30,SJP");
 		});
 		it("should return fixed-width-input as csv-string (inner commas)", function () {
 			var test = fixy.parse({
@@ -88,7 +88,7 @@ describe("Fixy Tests", function() {
 					format: "csv"
 				}
 			}, "30S,JP\n30S,JP");
-			assert.deepEqual(test, "Age,Initial\r\n30,\"S,JP\"\r\n30,\"S,JP\"");
+			assert.deepEqual(test, "Age,Initial\n30,\"S,JP\"\n30,\"S,JP\"");
 		});
 	});
 });

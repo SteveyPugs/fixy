@@ -48,7 +48,7 @@ describe("Fixy Tests", function() {
 				Rating: 9.2
 			}]);
 		});
-		it("should return fixed-width-input as csv-string", function () {
+		it("should return fixed-width-input as csv-string (no inner commas)", function () {
 			var test = fixy.parse({
 				map:[{
 					name: "Age",
@@ -67,7 +67,28 @@ describe("Fixy Tests", function() {
 					format: "csv"
 				}
 			}, "30SJP\n30SJP");
-			assert.deepEqual(test, "\"Age\",\"Initial\"\n\"30\",\"SJP\"\n\"30\",\"SJP\"");
+			assert.deepEqual(test, "Age,Initial\r\n30,SJP\r\n30,SJP");
+		});
+		it("should return fixed-width-input as csv-string (inner commas)", function () {
+			var test = fixy.parse({
+				map:[{
+					name: "Age",
+					width: 2,
+					start: 1,
+					type: "int"
+				},{
+					name: "Initial",
+					width: 4,
+					start: 3,
+					type: "string"
+				}],
+				options:{
+					fullwidth: 6,
+					skiplines: null,
+					format: "csv"
+				}
+			}, "30S,JP\n30S,JP");
+			assert.deepEqual(test, "Age,Initial\r\n30,\"S,JP\"\r\n30,\"S,JP\"");
 		});
 	});
 });

@@ -1,6 +1,6 @@
 {
   "name": "fixy",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Fixed Width Input Parser",
   "main": "index.js",
   "directories": {
@@ -18,7 +18,7 @@
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
     "moment": "^2.10.6",
-    "nice-json2csv": "^0.2.0"
+    "papaparse": "^4.1.2"
   },
   "devDependencies": {
     "mocha": "^2.3.3"

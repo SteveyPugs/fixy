@@ -1,7 +1,7 @@
 var internals = {};
 var fs = require("fs");
 var moment = require("moment");
-var json2csv = require("nice-json2csv");
+var Papa = require("papaparse");
 
 String.prototype.splice = function(idx, rem, str) {
     return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
@@ -92,7 +92,7 @@ internals.parse = function(specs, input){
 		}
 		switch(specs.options.format){
 			case "csv":
-				return json2csv.convert(output);
+				return Papa.unparse(output);
 				break;
 			default:
 				return output;

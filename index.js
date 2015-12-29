@@ -34,7 +34,7 @@ function returnCol(row, map){
 					if(map[item].percision){
 						percision = map[item].percision;
 					}
-					parsed_row[map[item].name] = parseFloat(value.splice(map[item].width - percision, 0, "."));
+					parsed_row[map[item].name] = parseFloat(value.splice(map[item].width - percision, 0, ".")).toFixed(percision);
 					break;
 				case "int":
 					parsed_row[map[item].name] = parseInt(value);

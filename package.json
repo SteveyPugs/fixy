@@ -1,6 +1,6 @@
 {
   "name": "fixy",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A Fixed Width Input Parser",
   "main": "index.js",
   "directories": {

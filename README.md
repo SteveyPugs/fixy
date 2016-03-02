@@ -5,7 +5,7 @@
 
 # Fixy
    
-Fixy is an npm module for parsing fixed formatted strings/files.
+Fixy is an npm module for parsing fixed formatted strings/files and unparsing an Array of Objects.
 
 #### Install
 
@@ -13,6 +13,7 @@ Fixy is an npm module for parsing fixed formatted strings/files.
 
 #### Usage
 
+	// fixy.parse | Parsing a Fixed Format Input
 	var fixy = fixy.parse({
 		map: [{
 			name: "Age",
@@ -27,11 +28,34 @@ Fixy is an npm module for parsing fixed formatted strings/files.
 		}
 	},"30ABC20151201Y950");
 
+	// fixy.unparse | Parsing to Fixed Format Output
+	var fixy = fixy.unparse([{
+			name: "Age",
+			width: 7,
+			padding_position: "end",
+			padding_symbol: "#"
+		},{
+			name: "Initial",
+			width: 4,
+			padding_position: "end",
+			padding_symbol: "@"
+		}], [{
+		Age: 30,
+		Initial: "SJP"
+	},{
+		Age: 20,
+		Initial: "CCS"
+	}]);
+
+
 #### Configuration
+
+##### fixy.parse({map, options}, fixed-format-string)
 
 ###### map
 
 A map [array of objects] of the column names, width, starting point, type of value, extra type settings.
+
 
 - Integer
 	- type : "int"
@@ -69,3 +93,14 @@ A map [array of objects] of the column names, width, starting point, type of val
 - fullwidth = full length / width of row from start to end
 - skiplines = optional array of rows to be skipped. May be left null
 - format = defaults "json". Valid selections are: json, csv
+
+##### fixy.unparse(map, input[array of objects])
+
+###### map
+
+A map [array of objects] of the column names, width, starting point, type of value, extra type settings.
+
+- name (Required) | Name of the Key
+- width (Required) | Length of Fixed Section
+- padding_position (Optional. Default: "start") | Where padding should start ("start" or "end")
+- padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)

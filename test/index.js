@@ -136,5 +136,121 @@ describe("Fixy Tests", function() {
 			}, "30S,JP\n30S,JP");
 			assert.deepEqual(test, "Age,Initial\n30,\"S,JP\"\n30,\"S,JP\"");
 		});
+		it("should return a fixed format when passed an array of data (with objects) padding front w/ spaces", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					padding_position: "start",
+					padding_symbol: " "
+				},{
+					name: "Initial",
+					width: 4,
+					padding_position: "start",
+					padding_symbol: " "
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "     30 SJP\n     20 CCS");
+		});
+		it("should return a fixed format when passed an array of data (with objects) padding behind w/ spaces", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					padding_position: "end",
+					padding_symbol: " "
+				},{
+					name: "Initial",
+					width: 4,
+					padding_position: "end",
+					padding_symbol: " "
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "30     SJP \n20     CCS ");
+		});
+		it("should return a fixed format when passed an array of data (with objects) padding front w/ # symbol", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					padding_position: "start",
+					padding_symbol: "#"
+				},{
+					name: "Initial",
+					width: 4,
+					padding_position: "start",
+					padding_symbol: "#"
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "#####30#SJP\n#####20#CCS");
+		});
+		it("should return a fixed format when passed an array of data (with objects) padding behind w/ # symbol", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					padding_position: "end",
+					padding_symbol: "#"
+				},{
+					name: "Initial",
+					width: 4,
+					padding_position: "end",
+					padding_symbol: "#"
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "30#####SJP#\n20#####CCS#");
+		});
+		it("should return a fixed format when passed an array of data (with objects) padding behind w/ different symbols", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					padding_position: "end",
+					padding_symbol: "#"
+				},{
+					name: "Initial",
+					width: 4,
+					padding_position: "end",
+					padding_symbol: "@"
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "30#####SJP@\n20#####CCS@");
+		});
+		it("should return a fixed format when passed an array of data (with objects) no padding setting or symbol setting", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7
+				},{
+					name: "Initial",
+					width: 4
+				}], [{
+				Age: 30,
+				Initial: "SJP"
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "     30 SJP\n     20 CCS");
+		});
 	});
 });

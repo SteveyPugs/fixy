@@ -105,4 +105,46 @@ internals.parse = function(specs, input){
 	}
 };
 
+internals.unparse = function(specs, input){
+	var output = [];
+	try {
+		if(typeof(specs) !== "object")  throw "specs is not an array";
+		if(isEmpty(specs)) throw "specs is empty";
+		if(input === "") throw "input is empty";
+		var counter = 0;
+		for(var row in input){
+			for(var spec in specs){
+				var value = String(input[row][specs[spec].name]);
+				var valueLength = value.length;
+				if(specs[spec].width - value.length > 0){
+					for(var i = 1; i <= specs[spec].width - valueLength; i++){
+						var symbol = specs[spec].padding_symbol ? specs[spec].padding_symbol : " ";
+						if(symbol.length > 1) throw "padding_symbol can not have length > 1";
+						switch(specs[spec].padding_position){
+							case "start":
+								value = symbol + value;
+								break;
+							case "end":
+								value = value + symbol;
+								break;
+							default:
+								value = symbol + value;
+								break;
+						}
+					}
+				}
+				output = output + value;
+			}
+			counter = counter + 1;
+			if(input.length !== counter){
+				output = output + "\n"
+			}
+		}
+		return output;
+	}
+	catch(err){
+		console.log(err);
+	}
+};
+
 module.exports = internals;

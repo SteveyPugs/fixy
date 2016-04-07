@@ -1,8 +1,8 @@
 var fixy = require("../index");
 var assert = require("assert");
-describe("Fixy Tests", function() {
-	describe("#parse()", function () {
-		it("should return fixed-width-input as array(object)", function () {
+describe("Fixy Tests", function(){
+	describe("#parse()", function(){
+		it("should return fixed-width-input as array(object)", function(){
 			var test = fixy.parse({
 				map:[{
 						name: "Age",
@@ -48,7 +48,7 @@ describe("Fixy Tests", function() {
 				Rating: 9.20
 			}]);
 		});
-		it("should return fixed-width-input as array(object)", function () {
+		it("should return fixed-width-input as array(object)", function(){
 			var test = fixy.parse({
 				map:[{
 						name: "Age",
@@ -94,7 +94,7 @@ describe("Fixy Tests", function() {
 				Rating: 9.00
 			}]);
 		});
-		it("should return fixed-width-input as csv-string (no inner commas)", function () {
+		it("should return fixed-width-input as csv-string (no inner commas)", function(){
 			var test = fixy.parse({
 				map:[{
 					name: "Age",
@@ -115,7 +115,7 @@ describe("Fixy Tests", function() {
 			}, "30SJP\n30SJP");
 			assert.deepEqual(test, "Age,Initial\n30,SJP\n30,SJP");
 		});
-		it("should return fixed-width-input as csv-string (inner commas)", function () {
+		it("should return fixed-width-input as csv-string (inner commas)", function(){
 			var test = fixy.parse({
 				map:[{
 					name: "Age",
@@ -251,6 +251,55 @@ describe("Fixy Tests", function() {
 				Initial: "CCS"
 			}]);
 			assert.deepEqual(test, "     30 SJP\n     20 CCS");
+		});
+		it("should return fixed-width-input as csv-string (no inner commas) and adds a sybmol for float", function(){
+			var test = fixy.parse({
+				map:[{
+					name: "Product",
+					width: 10,
+					start: 1,
+					type: "string"
+				},{
+					name: "Price",
+					width: 5,
+					start: 11,
+					type: "float",
+					symbol: "$"
+				}],
+				options:{
+					fullwidth: 15,
+					skiplines: null,
+					format: "csv"
+				}
+			}, "Apple     00099\nOrange    00079");
+			assert.deepEqual(test, "Product,Price\nApple,$0.99\nOrange,$0.79");
+		});
+		it("should return fixed-width-input as array(object) and does not include the sybmol", function(){
+			var test = fixy.parse({
+				map:[{
+					name: "Product",
+					width: 10,
+					start: 1,
+					type: "string"
+				},{
+					name: "Price",
+					width: 5,
+					start: 11,
+					type: "float",
+					symbol: "$"
+				}],
+				options:{
+					fullwidth: 15,
+					skiplines: null
+				}
+			}, "Apple     00099\nOrange    00079");
+			assert.deepEqual(test, [{
+				Product: "Apple",
+				Price: 0.99
+			},{
+				Product: "Orange",
+				Price: 0.79
+			}]);
 		});
 	});
 });

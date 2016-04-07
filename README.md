@@ -67,7 +67,8 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- name (Required) | Name of the Column
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row
-	- percision (Required) | Float Percision Value (Ex: 9.20 is 2)
+	- percision (Optional) | Float Percision Value (Ex: 9.20 is 2) | DEFAULT TO 2 DECIMAL PLACES
+	- sybmol (Optional) | Symbol Value (Ex: $9.20) | ONLY AVAILABLE FOR FORMAT = CSV
 - Date
 	- type : "date"
 	- name (Required) | Name of the Column

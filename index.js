@@ -15,7 +15,7 @@ function isEmpty(obj) {
     return true;
 }
 
-function returnCol(row, map){	
+function returnCol(row, map, format){
 	var parsed_row = {};
 	for(var item in map){
 		var value = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
@@ -34,7 +34,11 @@ function returnCol(row, map){
 					if(map[item].percision){
 						percision = map[item].percision;
 					}
-					parsed_row[map[item].name] = parseFloat(value.splice(map[item].width - percision, 0, ".")).toFixed(percision);
+					var symbol = "";
+					if(map[item].symbol && format === "csv"){
+						symbol = map[item].symbol;
+					}
+					parsed_row[map[item].name] = symbol + parseFloat(value.splice(map[item].width - percision, 0, ".")).toFixed(percision);
 					break;
 				case "int":
 					parsed_row[map[item].name] = parseInt(value);
@@ -77,12 +81,12 @@ internals.parse = function(specs, input){
 			if(split_input[i].length === specs.options.fullwidth){
 				if(specs.options.skiplines !== null){
 					if(specs.options.skiplines.indexOf(parseInt(i) + 1) === -1){
-						var row = returnCol(split_input[i], specs.map);
+						var row = returnCol(split_input[i], specs.map, specs.options.format);
 						output.push(row)
 					}
 				}
 				else{
-					var row = returnCol(split_input[i], specs.map);
+					var row = returnCol(split_input[i], specs.map, specs.options.format);
 					output.push(row)
 				}
 			}

@@ -12,40 +12,109 @@ Fixy is an npm module for parsing fixed formatted strings/files and unparsing an
 	npm install fixy --save
 
 #### Usage
+##### fixy.parse | Single Level
 
-	// fixy.parse | Parsing a Fixed Format Input
 	var fixy = fixy.parse({
-		map: [{
+		map:[{
 			name: "Age",
 			width: 2,
 			start: 1,
 			type: "int"
-		}],
-		options: {
-			fullwidth: 2,
-			skiplines: null,
-			format: "json" //default
-		}
-	},"30ABC20151201Y950");
-
-	// fixy.unparse | Parsing to Fixed Format Output
-	var fixy = fixy.unparse([{
-			name: "Age",
-			width: 7,
-			padding_position: "end",
-			padding_symbol: "#"
 		},{
 			name: "Initial",
-			width: 4,
-			padding_position: "end",
-			padding_symbol: "@"
-		}], [{
+			width: 3,
+			start: 3,
+			type: "string"
+		}],
+		options:{
+			fullwidth: 5,
+			skiplines: null,
+			format: "csv"
+		}
+	}, "21ABC\n22DEF");
+
+##### fixy.parse | Multi Level
+
+	var fixy = fixy.parse({
+		map:[{
+			name: "Name",
+			width: 7,
+			start: 1,
+			type: "string",
+			level: "A"
+		},{
+			name: "Age",
+			width: 2,
+			start: 1,
+			type: "int",
+			level: "B"
+		}],
+		options:{
+			skiplines: null,
+			levels: {
+				"A": {
+					nickname: "A",
+					start: 0,
+					end: 0,
+					fullwidth: 7
+				},
+				"B": {
+					nickname: "B",
+					start: 1,
+					end: 2,
+					fullwidth: 2
+				}
+			}
+		}
+	}, "Steve  \n30");
+
+##### fixy.unparse | Single Level
+
+	var fixy = fixy.unparse([{
+		name: "Age",
+		width: 7,
+		padding_position: "end",
+		padding_symbol: "#"
+	},{
+		name: "Initial",
+		width: 4,
+		padding_position: "end",
+		padding_symbol: "@"
+	}], [{
 		Age: 30,
 		Initial: "SJP"
 	},{
 		Age: 20,
 		Initial: "CCS"
 	}]);
+
+##### fixy.unparse | Multi Level
+
+	var fixy = fixy.unparse([{
+		name: "Name",
+		width: 7,
+		padding_position: "end",
+		level: "A",
+	},{
+		name: "Age",
+		width: 3,
+		padding_position: "end",
+		level: "B"
+	},{
+		name: "Initial",
+		width: 4,
+		padding_position: "end",
+		level: "B"
+	}], {
+		A: [{ Name: "Mike" }],
+		B: [{
+			Age: 30,
+			Initial: "MAS"
+		},{
+			Age: 20,
+			Initial: "SAM"
+		}]
+	}, ["A", "B"]);
 
 
 #### Configuration
@@ -62,6 +131,7 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- name (Required) | Name of the Column
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row
+	- level (Required if Multi Level) | Level Map Name
 - Float
 	- type : "float"
 	- name (Required) | Name of the Column
@@ -69,6 +139,7 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- start (Required) | Start of Column in Row
 	- percision (Optional) | Float Percision Value (Ex: 9.20 is 2) | DEFAULT TO 2 DECIMAL PLACES
 	- sybmol (Optional) | Symbol Value (Ex: $9.20) | ONLY AVAILABLE FOR FORMAT = CSV
+	- level (Required if Multi Level) | Level Map Name
 - Date
 	- type : "date"
 	- name (Required) | Name of the Column
@@ -76,11 +147,13 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- start (Required) | Start of Column in Row
 	- inputformat (Required) | Format Date Date is Currently In
 	- outputformat (Required) | Format Date Date is Returned As
+	- level (Required if Multi Level) | Level Map Name
 - String
 	- type : "string"
 	- name (Required) | Name of the Column
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row
+	- level (Required if Multi Level) | Level Map Name
 - Boolean
 	- type : "bool"
 	- name (Required) | Name of the Column
@@ -88,14 +161,29 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- start (Required) | Start of Column in Row
 	- tVal (Required) | String Value of True
 	- fVal (Required) | String Value of False
+	- level (Required if Multi Level) | Level Map Name
 
-###### options
+###### options (for single level)
 	
-- fullwidth = full length / width of row from start to end
+- fullwidth = full length of rows from start to end
 - skiplines = optional array of rows to be skipped. May be left null
 - format = defaults "json". Valid selections are: json, csv
 
-##### fixy.unparse(map, input[array of objects])
+###### options (for multi level)
+	
+- skiplines = optional array of rows to be skipped. May be left null
+- levels = level map object (see example)
+
+
+	"LEVELNAME": {
+		nickname: "NameInMap",
+		start: 0, //row start, zero based
+		end: 0, //row end, zero based
+		fullwidth: 7 // row width per level
+	}
+
+
+##### fixy.unparse(map, array of objects || object with levels [see example], [array level order (required for multi)])
 
 ###### map
 
@@ -105,3 +193,14 @@ A map [array of objects] of the column names, width, starting point, type of val
 - width (Required) | Length of Fixed Section
 - padding_position (Optional. Default: "start") | Where padding should start ("start" or "end")
 - padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)
+- level (Required if Multi Level) | Level Map Name
+
+###### example object with level mapping
+
+	{
+		A: [{ Name: "Mike" }],
+		B: [{
+			Age: 30,
+			Initial: "MSP"
+		}]
+	}

@@ -24,10 +24,20 @@ function returnCol(row, map, format){
 			switch(map[item].type){
 				case "date":
 					if(map[item].inputformat){
-						parsed_row[map[item].name] = moment(value, map[item].inputformat).format(map[item].outputformat);
+						if(moment(value, map[item].inputformat).isValid()){
+							parsed_row[map[item].name] = moment(value, map[item].inputformat).format(map[item].outputformat);	
+						}
+						else{
+							parsed_row[map[item].name] = null;
+						}
 					}
 					else{
-						parsed_row[map[item].name] = moment(value).format(map[item].outputformat);
+						if(moment(value).isValid()){
+							parsed_row[map[item].name] = moment(value).format(map[item].outputformat);
+						}
+						else{
+							parsed_row[map[item].name] = null;
+						}
 					}
 					break;
 				case "float":

@@ -8,78 +8,70 @@ String.prototype.splice = function(idx, rem, str) {
     return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
 
-function isEmpty(obj) {
-    for(var prop in obj) {
-        if(obj.hasOwnProperty(prop))
-            return false;
-    }
-    return true;
-}
-
-function returnCol(row, map, format){
-	var parsed_row = {};
-	for(var item in map){
-		var value = row.substring(map[item].start-1, (map[item].start + map[item].width - 1)).trim();
-		if(value){
-			switch(map[item].type){
+var parseCol = function(row, map, format){
+	var r = {};
+	lodash.forEach(map, function(i){
+		var v = row.substring(i.start-1, (i.start + i.width - 1)).trim();
+		if(v){
+			switch(i.type){
 				case "date":
-					if(map[item].inputformat){
-						if(moment(value, map[item].inputformat).isValid()){
-							parsed_row[map[item].name] = moment(value, map[item].inputformat).format(map[item].outputformat);	
+					if(i.inputformat){
+						if(moment(v, i.inputformat).isValid()){
+							r[i.name] = moment(v, i.inputformat).format(i.outputformat);	
 						}
 						else{
-							parsed_row[map[item].name] = null;
+							r[i.name] = null;
 						}
 					}
 					else{
-						if(moment(value).isValid()){
-							parsed_row[map[item].name] = moment(value).format(map[item].outputformat);
+						if(moment(v).isValid()){
+							r[i.name] = moment(v).format(i.outputformat);
 						}
 						else{
-							parsed_row[map[item].name] = null;
+							r[i.name] = null;
 						}
 					}
 					break;
 				case "float":
 					var percision = 2;
-					if(map[item].percision){
-						percision = map[item].percision;
+					if(i.percision){
+						percision = i.percision;
 					}
 					var symbol = "";
-					if(map[item].symbol && format === "csv"){
-						symbol = map[item].symbol;
+					if(i.symbol && format === "csv"){
+						symbol = i.symbol;
 					}
-					parsed_row[map[item].name] = symbol + parseFloat(value.splice(map[item].width - percision, 0, ".")).toFixed(percision);
+					r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
 					break;
 				case "int":
-					parsed_row[map[item].name] = parseInt(value);
+					r[i.name] = parseInt(v);
 					break;
 				case "bool":
-					parsed_row[map[item].name] = false;
-					if(value === map[item].tVal){
-						parsed_row[map[item].name] = true;
+					r[i.name] = false;
+					if(v === i.tVal){
+						r[i.name] = true;
 					}
 					break;
 				case "string":
-					parsed_row[map[item].name] = value;
+					r[i.name] = v;
 					break;
 				default:
-					parsed_row[map[item].name] = value;
+					r[i.name] = v;
 			}
 		}
 		else{
-			parsed_row[map[item].name] = null;
+			r[i.name] = null;
 		}
-	}
-	return parsed_row;
-}
+	});
+	return r;
+};
 
 internals.parse = function(specs, input){
 	try {
 		if(typeof(specs) !== "object")  throw "specs is not an array";
-		if(isEmpty(specs)) throw "specs is empty";
-		if(isEmpty(specs.map)) throw "specs maps is empty";
-		if(isEmpty(specs.options)) throw "specs options is empty";
+		if(lodash.isEmpty(specs)) throw "specs is empty";
+		if(lodash.isEmpty(specs.map)) throw "specs maps is empty";
+		if(lodash.isEmpty(specs.options)) throw "specs options is empty";
 		if(input === "") throw "input is empty";
 		var array_output = [];
 		var object_output = {};
@@ -87,55 +79,51 @@ internals.parse = function(specs, input){
 		if(split_input.indexOf("") !== -1){
 			split_input.splice(split_input.indexOf(""), 1);
 		}
-		for(var i in split_input){
-			if(split_input[i].length === specs.options.fullwidth && !specs.options.levels){
+		lodash.forEach(split_input, function(i, idx){
+			if(i.length === specs.options.fullwidth && !specs.options.levels){
 				if(specs.options.skiplines !== null){
-					if(specs.options.skiplines.indexOf(parseInt(i) + 1) === -1){
-						var row = returnCol(split_input[i], specs.map, specs.options.format);
-						array_output.push(row)
+					if(specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1){
+						array_output.push(parseCol(i, specs.map, specs.options.format));
 					}
 				}
 				else{
-					var row = returnCol(split_input[i], specs.map, specs.options.format);
-					array_output.push(row)
+					array_output.push(parseCol(i, specs.map, specs.options.format));
 				}
 			}
 			else if(specs.options.levels){
 				var level = lodash.find(specs.options.levels, function(v, k){
-					if(i >= v.start && i <= v.end){
+					if(idx >= v.start && idx <= v.end){
 						return true;
 					}
 				});
 				var level_map = lodash.filter(specs.map, {
 					level: lodash.findKey(specs.options.levels, function(v, k){
-						if(i >= v.start && i <= v.end){
+						if(idx >= v.start && idx <= v.end){
 							return true;
 						}
 					})
 				});
-				if(split_input[i].length === level.fullwidth){
+				if(i.length === level.fullwidth){
 					if(!object_output.hasOwnProperty(level.nickname)){
 						object_output[level.nickname] = [];
 					}
 					if(specs.options.skiplines !== null){
-						if(specs.options.skiplines.indexOf(parseInt(i) + 1) === -1){
-							var row = returnCol(split_input[i], level_map, specs.options.format);
-							object_output[level.nickname].push(row);
+						if(specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1){
+							object_output[level.nickname].push(parseCol(i, level_map, specs.options.format));
 						}
 					}
 					else{
-						var row = returnCol(split_input[i], level_map, specs.options.format);
-						object_output[level.nickname].push(row);
+						object_output[level.nickname].push(parseCol(i, level_map, specs.options.format));
 					}
 				}
 				else{
-					throw "Row #" + (parseInt(i) + 1) + " does not match fullwidth";
+					throw "Row #" + (parseInt(idx) + 1) + " does not match fullwidth";
 				}
 			}
 			else{
-				throw "Row #" + (parseInt(i) + 1) + " does not match fullwidth";
+				throw "Row #" + (parseInt(idx) + 1) + " does not match fullwidth";
 			}
-		}
+		});
 		switch(specs.options.format){
 			case "csv":
 				if(array_output.length === 0){
@@ -160,7 +148,7 @@ internals.unparse = function(specs, input, levels){
 	var output = [];
 	try {
 		if(typeof(specs) !== "object")  throw "specs is not an array";
-		if(isEmpty(specs)) throw "specs is empty";
+		if(lodash.isEmpty(specs)) throw "specs is empty";
 		if(input === "") throw "input is empty";
 		var counter = 0;
 		if(levels){

@@ -1,6 +1,6 @@
 {
   "name": "fixy",
-  "version": "0.5.1",
+  "version": "1.0.0",
   "description": "A Fixed Width Input Parser",
   "main": "index.js",
   "directories": {
@@ -18,11 +18,11 @@
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
     "lodash": "^4.12.0",
-    "moment": "^2.11.2",
+    "moment": "^2.15.0",
     "papaparse": "^4.1.2"
   },
   "devDependencies": {
-    "mocha": "^2.3.3"
+    "mocha": "^3.0.2"
   },
   "scripts": {
     "test": "make test"

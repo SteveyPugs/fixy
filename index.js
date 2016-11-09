@@ -166,7 +166,10 @@ internals.unparse = function(specs, input, levels){
 					lodash.forEach(specs_by_level, function(spec){
 						var value = String(inp[spec.name]);
 						var valueLength = value.length;
-						if(spec.width - value.length > 0){
+						if(valueLength > spec.width){
+							value = value.substr(0, spec.width);
+						}
+						else if(spec.width - value.length > 0){
 							for(var i = 1; i <= spec.width - valueLength; i++){
 								var symbol = spec.padding_symbol ? spec.padding_symbol : " ";
 								if(symbol.length > 1) throw "padding_symbol can not have length > 1";
@@ -199,7 +202,10 @@ internals.unparse = function(specs, input, levels){
 				for(var spec in specs){
 					var value = String(input[row][specs[spec].name]);
 					var valueLength = value.length;
-					if(specs[spec].width - value.length > 0){
+					if(valueLength > specs[spec].width){
+						value = value.substr(0, specs[spec].width);
+					}
+					else if(specs[spec].width - value.length > 0){
 						for(var i = 1; i <= specs[spec].width - valueLength; i++){
 							var symbol = specs[spec].padding_symbol ? specs[spec].padding_symbol : " ";
 							if(symbol.length > 1) throw "padding_symbol can not have length > 1";

@@ -182,8 +182,8 @@ internals.unparse = function(specs, input, levels){
 										break;
 								}
 							}
-							output = output + value;
 						}
+						output = output + value;
 					});
 					counter = counter + 1;
 					if(rowCount !== counter){

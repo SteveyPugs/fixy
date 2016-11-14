@@ -164,7 +164,9 @@ internals.unparse = function(specs, input, levels){
 				});
 				lodash.forEach(input_by_level, function(inp){
 					lodash.forEach(specs_by_level, function(spec){
-						var value = String(inp[spec.name]);
+  					var value = inp[spec.name];
+  					value = typeof value !== 'undefined' ? value : '';
+  					value = String(value);
 						var valueLength = value.length;
 						if(valueLength > spec.width){
 							value = value.substr(0, spec.width);
@@ -200,7 +202,9 @@ internals.unparse = function(specs, input, levels){
 		else{
 			for(var row in input){
 				for(var spec in specs){
-					var value = String(input[row][specs[spec].name]);
+					var value = input[row][specs[spec].name];
+					value = typeof value !== 'undefined' ? value : '';
+					value = String(value);
 					var valueLength = value.length;
 					if(valueLength > specs[spec].width){
 						value = value.substr(0, specs[spec].width);

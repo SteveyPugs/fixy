@@ -133,7 +133,7 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- start (Required) | Start of Column in Row
 	- level (Required if Multi Level) | Level Map Name
 - Float
-	- type : "float"
+	- type : "float" (decimal use allowed but not required)
 	- name (Required) | Name of the Column
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row

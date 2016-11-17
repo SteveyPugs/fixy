@@ -41,7 +41,13 @@ var parseCol = function(row, map, format){
 					if(i.symbol && format === "csv"){
 						symbol = i.symbol;
 					}
-					r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
+
+					if(lodash.includes(v, ".")){
+						r[i.name] = symbol + parseFloat(v).toFixed(percision);
+					}
+					else{
+						r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
+					}
 					break;
 				case "int":
 					r[i.name] = parseInt(v);

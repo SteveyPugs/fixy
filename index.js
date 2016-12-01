@@ -41,7 +41,13 @@ var parseCol = function(row, map, format){
 					if(i.symbol && format === "csv"){
 						symbol = i.symbol;
 					}
-					r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
+
+					if(lodash.includes(v, ".")){
+						r[i.name] = symbol + parseFloat(v).toFixed(percision);
+					}
+					else{
+						r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
+					}
 					break;
 				case "int":
 					r[i.name] = parseInt(v);
@@ -164,9 +170,9 @@ internals.unparse = function(specs, input, levels){
 				});
 				lodash.forEach(input_by_level, function(inp){
 					lodash.forEach(specs_by_level, function(spec){
-  					var value = inp[spec.name];
-  					value = typeof value !== 'undefined' ? value : '';
-  					value = String(value);
+	  					var value = inp[spec.name];
+	  					value = typeof value !== 'undefined' && value !== null ? value : '';
+	  					value = String(value);
 						var valueLength = value.length;
 						if(valueLength > spec.width){
 							value = value.substr(0, spec.width);
@@ -203,7 +209,7 @@ internals.unparse = function(specs, input, levels){
 			for(var row in input){
 				for(var spec in specs){
 					var value = input[row][specs[spec].name];
-					value = typeof value !== 'undefined' ? value : '';
+					value = typeof value !== 'undefined' && value !== null ? value : '';
 					value = String(value);
 					var valueLength = value.length;
 					if(valueLength > specs[spec].width){

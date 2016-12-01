@@ -258,6 +258,125 @@ describe("Fixy Tests", function(){
 				}]
 			});
 		});
+		it("should return fixed-width-input as array(object) if decimal within float", function(){
+			var test = fixy.parse({
+				map:[{
+						name: "Age",
+						width: 2,
+						start: 1,
+						type: "int"
+					},{
+						name: "Initial",
+						width: 3,
+						start: 3,
+						type: "string"
+					},{
+						name: "DateEntered",
+						width: 8,
+						start: 6,
+						type: "date",
+						inputformat: "YYYYMMDD",
+						outputformat: "YYYY-MM-DD"
+					},{
+						name: "IsBad",
+						width: 1,
+						start: 14,
+						type: "bool",
+						tVal: "Y",
+						fVal: "N"
+					},{
+						name: "Rating",
+						width: 4,
+						start: 15,
+						type: "float",
+						percision: 2
+					}],
+				options:{
+					fullwidth: 18,
+					skiplines: null
+				}
+			}, "30SJP20121231N9.20");
+			assert.deepEqual(test, [{
+				Age: 30,
+				Initial: "SJP",
+				DateEntered: "2012-12-31",
+				IsBad: false,
+				Rating: 9.20
+			}]);
+		});
+		it("should return fixed-width-input (multi-leveled) as array(object) if decimal within float", function(){
+			var test = fixy.parse({
+				map:[{
+					name: "Name",
+					width: 7,
+					start: 1,
+					type: "string",
+					level: "A"
+				},{
+					name: "Age",
+					width: 2,
+					start: 1,
+					type: "int",
+					level: "B"
+				},{
+					name: "Initial",
+					width: 3,
+					start: 3,
+					type: "string",
+					level: "B"
+				},{
+					name: "DateEntered",
+					width: 8,
+					start: 6,
+					type: "date",
+					inputformat: "YYYYMMDD",
+					outputformat: "YYYY-MM-DD",
+					level: "B"
+				},{
+					name: "IsBad",
+					width: 1,
+					start: 14,
+					type: "bool",
+					tVal: "Y",
+					fVal: "N",
+					level: "B"
+				},{
+					name: "Rating",
+					width: 4,
+					start: 15,
+					type: "float",
+					percision: 2,
+					level: "B"
+				}],
+				options:{
+					skiplines: null,
+					levels: {
+						"A": {
+							nickname: "A",
+							start: 0,
+							end: 0,
+							fullwidth: 7
+						},
+						"B": {
+							nickname: "B",
+							start: 1,
+							end: 2,
+							fullwidth: 18
+						}
+					}
+				}
+			}, "Steve  \n30SJP20121231N9.20");
+			assert.deepEqual(test, {
+				A: [{ Name: "Steve" }],
+				B: [{
+					Age: 30,
+					Initial: "SJP",
+					DateEntered: "2012-12-31",
+					IsBad: false,
+					Rating: 9.20
+				}]
+			});
+		});
 	});
 	describe("#unparse()", function(){
 		it("should return a fixed format when passed an array of data (with objects) padding front w/ spaces", function(){
@@ -376,6 +495,22 @@ describe("Fixy Tests", function(){
 			}]);
 			assert.deepEqual(test, "     30 SJP\n     20 CCS");
 		});
+		it("should return a fixed format when passed an array of data (with objects) with a null or undefined item", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7
+				},{
+					name: "Initial",
+					width: 4
+			}], [{
+				Age: 30,
+				Initial: null
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "     30    \n     20 CCS");
+		});
 		it("should return a fixed format when passed an object", function(){
 			var test = fixy.unparse([{
 				name: "Name",
@@ -403,6 +538,34 @@ describe("Fixy Tests", function(){
 				}]
 			}, ["A", "B"]);
 			assert.deepEqual(test, "Steve  \n30 SJP \n20 CCS ");
+		});
+		it("should return a fixed format when passed an object", function(){
+			var test = fixy.unparse([{
+				name: "Name",
+				width: 7,
+				padding_position: "end",
+				level: "A",
+			},{
+				name: "Age",
+				width: 3,
+				padding_position: "end",
+				level: "B"
+			},{
+				name: "Initial",
+				width: 4,
+				padding_position: "end",
+				level: "B"
+			}], {
+				A: [{ Name: "Steve" }],
+				B: [{
+					Age: 30,
+					Initial: null
+				},{
+					Age: 20,
+					Initial: "CCS"
+				}]
+			}, ["A", "B"]);
+			assert.deepEqual(test, "Steve  \n30     \n20 CCS ");
 		});
 	});
 });

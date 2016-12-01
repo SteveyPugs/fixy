@@ -170,9 +170,14 @@ internals.unparse = function(specs, input, levels){
 				});
 				lodash.forEach(input_by_level, function(inp){
 					lodash.forEach(specs_by_level, function(spec){
-						var value = String(inp[spec.name]);
+	  					var value = inp[spec.name];
+	  					value = typeof value !== 'undefined' && value !== null ? value : '';
+	  					value = String(value);
 						var valueLength = value.length;
-						if(spec.width - value.length > 0){
+						if(valueLength > spec.width){
+							value = value.substr(0, spec.width);
+						}
+						else if(spec.width - value.length > 0){
 							for(var i = 1; i <= spec.width - valueLength; i++){
 								var symbol = spec.padding_symbol ? spec.padding_symbol : " ";
 								if(symbol.length > 1) throw "padding_symbol can not have length > 1";
@@ -188,8 +193,8 @@ internals.unparse = function(specs, input, levels){
 										break;
 								}
 							}
-							output = output + value;
 						}
+						output = output + value;
 					});
 					counter = counter + 1;
 					if(rowCount !== counter){
@@ -203,9 +208,14 @@ internals.unparse = function(specs, input, levels){
 		else{
 			for(var row in input){
 				for(var spec in specs){
-					var value = String(input[row][specs[spec].name]);
+					var value = input[row][specs[spec].name];
+					value = typeof value !== 'undefined' && value !== null ? value : '';
+					value = String(value);
 					var valueLength = value.length;
-					if(specs[spec].width - value.length > 0){
+					if(valueLength > specs[spec].width){
+						value = value.substr(0, specs[spec].width);
+					}
+					else if(specs[spec].width - value.length > 0){
 						for(var i = 1; i <= specs[spec].width - valueLength; i++){
 							var symbol = specs[spec].padding_symbol ? specs[spec].padding_symbol : " ";
 							if(symbol.length > 1) throw "padding_symbol can not have length > 1";

@@ -495,6 +495,22 @@ describe("Fixy Tests", function(){
 			}]);
 			assert.deepEqual(test, "     30 SJP\n     20 CCS");
 		});
+		it("should return a fixed format when passed an array of data (with objects) with a null or undefined item", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7
+				},{
+					name: "Initial",
+					width: 4
+			}], [{
+				Age: 30,
+				Initial: null
+			},{
+				Age: 20,
+				Initial: "CCS"
+			}]);
+			assert.deepEqual(test, "     30    \n     20 CCS");
+		});
 		it("should return a fixed format when passed an object", function(){
 			var test = fixy.unparse([{
 				name: "Name",
@@ -522,6 +538,34 @@ describe("Fixy Tests", function(){
 				}]
 			}, ["A", "B"]);
 			assert.deepEqual(test, "Steve  \n30 SJP \n20 CCS ");
+		});
+		it("should return a fixed format when passed an object", function(){
+			var test = fixy.unparse([{
+				name: "Name",
+				width: 7,
+				padding_position: "end",
+				level: "A",
+			},{
+				name: "Age",
+				width: 3,
+				padding_position: "end",
+				level: "B"
+			},{
+				name: "Initial",
+				width: 4,
+				padding_position: "end",
+				level: "B"
+			}], {
+				A: [{ Name: "Steve" }],
+				B: [{
+					Age: 30,
+					Initial: null
+				},{
+					Age: 20,
+					Initial: "CCS"
+				}]
+			}, ["A", "B"]);
+			assert.deepEqual(test, "Steve  \n30     \n20 CCS ");
 		});
 	});
 });

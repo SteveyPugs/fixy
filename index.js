@@ -203,7 +203,10 @@ internals.unparse = function(specs, input, levels){
 		else{
 			for(var row in input){
 				for(var spec in specs){
-					var value = String(input[row][specs[spec].name]);
+					var value = input[row][specs[spec].name];
+					var defaultValue = lodash.defaultTo(specs[spec].default, "");
+					value = lodash.defaultTo(value, defaultValue);
+					value = String(value);
 					var valueLength = value.length;
 					if(specs[spec].width - value.length >= 0){
 						for(var i = 1; i <= specs[spec].width - valueLength; i++){

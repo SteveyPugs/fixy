@@ -523,5 +523,32 @@ describe("Fixy Tests", function(){
 			}, ["A", "B"]);
 			assert.deepEqual(test, "Steve  \n30 SJP \n20 CCS ");
 		});
+		it("should allow default values", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+					width: 7,
+					default: 20
+			},{
+				name: "Initial",
+				width: 4
+			}], [{
+				Initial: "SJP"
+			}]);
+			assert.deepEqual(test, "     20 SJP");
+		});
+		it("should handle null values", function(){
+			var test = fixy.unparse([{
+					name: "Age",
+				width: 7
+			},{
+				name: "Initial",
+				width: 4,
+				padding_symbol: "#"
+			}], [{
+				Age: undefined,
+				Initial: null
+			}]);
+			assert.deepEqual(test, "       ####");
+		});
 	});
 });

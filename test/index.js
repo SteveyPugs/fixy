@@ -2,6 +2,24 @@ var fixy = require("../index");
 var assert = require("assert");
 describe("Fixy Tests", function(){
 	describe("#parse()", function(){
+		it("should allow optional values to be omitted", function(){
+			var test = fixy.parse({
+				map:[{
+					name: "Age",
+					width: 2,
+					start: 1,
+					type: "int"
+				}],
+				options:{
+					fullwidth: 2,
+				}
+			}, '30');
+			
+			assert.deepEqual(test, [{
+				Age: 30,
+			}]);
+		});
+		
 		it("should return fixed-width-input as array(object)", function(){
 			var test = fixy.parse({
 				map:[{

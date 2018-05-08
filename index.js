@@ -85,7 +85,7 @@ internals.parse = function(specs, input){
 	}
 	lodash.forEach(split_input, function(i, idx){
 		if(i.length === specs.options.fullwidth && !specs.options.levels){
-			if(specs.options.skiplines !== null){
+			if(!lodash.isEmpty(specs.options.skiplines)){
 				if(specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1){
 					array_output.push(parseCol(i, specs.map, specs.options.format));
 				}

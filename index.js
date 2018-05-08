@@ -180,7 +180,7 @@ internals.unparse = function(specs, input, levels){
 									break;
 							}
 						}
-						output = output + value;
+						output = output + value.substring(0, spec.width);
 					}
 				});
 				counter = counter + 1;
@@ -217,7 +217,7 @@ internals.unparse = function(specs, input, levels){
 						}
 					}
 				}
-				output = output + value;
+				output = output + value.substring(0, specs[spec].width);
 			}
 			counter = counter + 1;
 			if(input.length !== counter){

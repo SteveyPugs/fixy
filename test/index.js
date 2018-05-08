@@ -550,5 +550,14 @@ describe("Fixy Tests", function(){
 			}]);
 			assert.deepEqual(test, "       ####");
 		});
+		it("should truncate values that are too long", function(){
+			var test = fixy.unparse([{
+				name: "Name",
+				width: 7
+			}], [{
+				Name: "Alexander"
+			}]);
+			assert.deepEqual(test, "Alexand");
+		});
 	});
 });

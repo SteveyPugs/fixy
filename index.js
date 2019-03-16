@@ -16,7 +16,7 @@ var parseCol = function(row, map, format){
 				case "date":
 					if(i.inputformat){
 						if(moment(v, i.inputformat).isValid()){
-							r[i.name] = moment(v, i.inputformat).format(i.outputformat);	
+							r[i.name] = moment(v, i.inputformat).format(i.outputformat);
 						}
 						else{
 							r[i.name] = null;
@@ -136,11 +136,11 @@ internals.parse = function(specs, input){
 			else{
 				return Papa.unparse(array_output.length > 0 ? array_output : object_output, {
 					newline: "\n"
-				});	
+				});
 			}
 		default:
 			return array_output.length > 0 ? array_output : object_output;
-	}	
+	}
 };
 
 internals.unparse = function(specs, input, levels){
@@ -163,6 +163,8 @@ internals.unparse = function(specs, input, levels){
 			lodash.forEach(input_by_level, function(inp){
 				lodash.forEach(specs_by_level, function(spec){
 					var value = String(inp[spec.name]);
+          value = preprocessCheck(spec, value);
+
 					var valueLength = value.length;
 					if(spec.width - value.length >= 0){
 						for(var i = 1; i <= spec.width - valueLength; i++){
@@ -199,6 +201,7 @@ internals.unparse = function(specs, input, levels){
 				var defaultValue = lodash.defaultTo(specs[spec].default, "");
 				value = lodash.defaultTo(value, defaultValue);
 				value = String(value);
+        value = preprocessCheck(specs[spec], value);
 				var valueLength = value.length;
 				if(specs[spec].width - value.length >= 0){
 					for(var i = 1; i <= specs[spec].width - valueLength; i++){
@@ -226,6 +229,14 @@ internals.unparse = function(specs, input, levels){
 		}
 		return output;
 	}
+
 };
+
+const preprocessCheck = (spec, value) => {
+  if (spec.preprocess) {
+    value = spec.preprocess(value);
+  }
+  return value;
+}
 
 module.exports = internals;

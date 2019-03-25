@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/SteveyPugs/fixy.svg?branch=master)](https://travis-ci.org/SteveyPugs/fixy)
 
 # Fixy
-   
+
 Fixy is an npm module for parsing fixed formatted strings/files and unparsing an Array of Objects.
 
 #### Install
@@ -88,6 +88,28 @@ Fixy is an npm module for parsing fixed formatted strings/files and unparsing an
 		Initial: "CCS"
 	}]);
 
+##### fixy.unparse | with preprocessing
+
+	let noDecimal = (value) => {
+		return `${value}`.replace(/\./, '');
+	}
+
+	var fixy = fixy.unparse([{
+		name: "Name",
+		width: 10,
+		padding_position: "start",
+		padding_symbol: " "
+	},{
+		name: "Balance",
+		width: 10,
+		padding_position: "start",
+		padding_symbol: "0",
+		preprocess: noDecimal
+	}], [{
+		Name: "Jenny",
+		Balance: 86753.09
+	}]);
+
 ##### fixy.unparse | Multi Level
 
 	var fixy = fixy.unparse([{
@@ -138,7 +160,7 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row
 	- percision (Optional) | Float Percision Value (Ex: 9.20 is 2) | DEFAULT TO 2 DECIMAL PLACES
-	- sybmol (Optional) | Symbol Value (Ex: $9.20) | ONLY AVAILABLE FOR FORMAT = CSV
+	- symbol (Optional) | Symbol Value (Ex: $9.20) | ONLY AVAILABLE FOR FORMAT = CSV
 	- level (Required if Multi Level) | Level Map Name
 - Date
 	- type : "date"
@@ -164,13 +186,13 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- level (Required if Multi Level) | Level Map Name
 
 ###### options (for single level)
-	
+
 - fullwidth = full length of rows from start to end
 - skiplines = optional array of rows to be skipped. May be left null
 - format = defaults "json". Valid selections are: json, csv
 
 ###### options (for multi level)
-	
+
 - skiplines = optional array of rows to be skipped. May be left null
 - levels = level map object (see example)
 
@@ -193,6 +215,8 @@ A map [array of objects] of the column names, width, starting point, type of val
 - width (Required) | Length of Fixed Section
 - padding_position (Optional. Default: "start") | Where padding should start ("start" or "end")
 - padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)
+- padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)
+- preprocess (Optional. Default: null) | What preprocessing should be enacted on respective values prior to padding.
 - level (Required if Multi Level) | Level Map Name
 
 ###### example object with level mapping

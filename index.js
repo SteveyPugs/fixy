@@ -4,7 +4,7 @@ var Papa = require("papaparse");
 var lodash = require("lodash");
 
 String.prototype.splice = function(idx, rem, str) {
-    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+		return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
 
 var parseCol = function(row, map, format){
@@ -72,7 +72,7 @@ var parseCol = function(row, map, format){
 };
 
 internals.parse = function(specs, input){
-	if(typeof(specs) !== "object")  throw "specs is not an array";
+	if(typeof(specs) !== "object")	throw "specs is not an array";
 	if(lodash.isEmpty(specs)) throw "specs is empty";
 	if(lodash.isEmpty(specs.map)) throw "specs maps is empty";
 	if(lodash.isEmpty(specs.options)) throw "specs options is empty";
@@ -145,7 +145,7 @@ internals.parse = function(specs, input){
 
 internals.unparse = function(specs, input, levels){
 	var output = [];
-	if(typeof(specs) !== "object")  throw "specs is not an array";
+	if(typeof(specs) !== "object")	throw "specs is not an array";
 	if(lodash.isEmpty(specs)) throw "specs is empty";
 	if(input === "") throw "input is empty";
 	var counter = 0;
@@ -163,7 +163,7 @@ internals.unparse = function(specs, input, levels){
 			lodash.forEach(input_by_level, function(inp){
 				lodash.forEach(specs_by_level, function(spec){
 					var value = String(inp[spec.name]);
-          value = preprocessCheck(spec, value);
+					value = preprocessCheck(spec, value);
 
 					var valueLength = value.length;
 					if(spec.width - value.length >= 0){
@@ -201,7 +201,7 @@ internals.unparse = function(specs, input, levels){
 				var defaultValue = lodash.defaultTo(specs[spec].default, "");
 				value = lodash.defaultTo(value, defaultValue);
 				value = String(value);
-        value = preprocessCheck(specs[spec], value);
+				value = preprocessCheck(specs[spec], value);
 				var valueLength = value.length;
 				if(specs[spec].width - value.length >= 0){
 					for(var i = 1; i <= specs[spec].width - valueLength; i++){
@@ -233,10 +233,7 @@ internals.unparse = function(specs, input, levels){
 };
 
 const preprocessCheck = (spec, value) => {
-  if (spec.preprocess) {
-    value = spec.preprocess(value);
-  }
-  return value;
+	return (spec.preprocess) ? spec.preprocess(value) : value;
 }
 
 module.exports = internals;

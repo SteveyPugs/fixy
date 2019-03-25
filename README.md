@@ -215,7 +215,6 @@ A map [array of objects] of the column names, width, starting point, type of val
 - width (Required) | Length of Fixed Section
 - padding_position (Optional. Default: "start") | Where padding should start ("start" or "end")
 - padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)
-- padding_symbol (Optional. Default: space " ") | What empty space should be padded with (any symbol, letter or number)
 - preprocess (Optional. Default: null) | What preprocessing should be enacted on respective values prior to padding.
 - level (Required if Multi Level) | Level Map Name
 

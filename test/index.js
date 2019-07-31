@@ -14,12 +14,12 @@ describe("Fixy Tests", function(){
 					fullwidth: 2,
 				}
 			}, '30');
-			
+
 			assert.deepEqual(test, [{
 				Age: 30,
 			}]);
 		});
-		
+
 		it("should return fixed-width-input as array(object)", function(){
 			var test = fixy.parse({
 				map:[{
@@ -397,6 +397,26 @@ describe("Fixy Tests", function(){
 		});
 	});
 	describe("#unparse()", function(){
+		it("should allow preprocessing", function(){
+			let preprocessor = (value) => {
+				value = Number.parseFloat(value) * 10000;
+				value = Math.floor(value) / 10000;
+				return `${value}`.replace(/\./, '');
+			}
+
+			var test = fixy.unparse([{
+					name: "Constant",
+					width: 9,
+					preprocess: preprocessor,
+					padding_position: "start",
+					padding_symbol: "0"
+				}], [{
+				Constant: 3.14159
+			},{
+				Constant: 2.71828
+			},]);
+			assert.deepEqual(test, "000031415\n000027182");
+		});
 		it("should return a fixed format when passed an array of data (with objects) padding front w/ spaces", function(){
 			var test = fixy.unparse([{
 					name: "Age",

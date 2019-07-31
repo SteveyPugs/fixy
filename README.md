@@ -159,7 +159,7 @@ A map [array of objects] of the column names, width, starting point, type of val
 	- name (Required) | Name of the Column
 	- width (Required) | Length of Column
 	- start (Required) | Start of Column in Row
-	- percision (Optional) | Float Percision Value (Ex: 9.20 is 2) | DEFAULT TO 2 DECIMAL PLACES
+	- precision (Optional) | Float Precision Value (Ex: 9.20 is 2) | DEFAULT TO 2 DECIMAL PLACES
 	- symbol (Optional) | Symbol Value (Ex: $9.20) | ONLY AVAILABLE FOR FORMAT = CSV
 	- level (Required if Multi Level) | Level Map Name
 - Date

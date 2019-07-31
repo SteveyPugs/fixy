@@ -32,9 +32,12 @@ var parseCol = function(row, map, format){
 					}
 					break;
 				case "float":
-					var percision = 2;
-					if(i.percision){
-						percision = i.percision;
+					var precision = 2;
+					if(i.percision){ // Support incorrect spelling for backward compatibility
+						precision = i.percision;
+					}
+					if(i.precision){
+						precision = i.precision;
 					}
 					var symbol = "";
 					if(i.symbol && format === "csv"){
@@ -42,10 +45,10 @@ var parseCol = function(row, map, format){
 					}
 
 					if(lodash.includes(v, ".")){
-						r[i.name] = symbol + parseFloat(v).toFixed(percision);
+						r[i.name] = symbol + parseFloat(v).toFixed(precision);
 					}
 					else{
-						r[i.name] = symbol + parseFloat(v.splice(i.width - percision, 0, ".")).toFixed(percision);
+						r[i.name] = symbol + parseFloat(v.splice(i.width - precision, 0, ".")).toFixed(precision);
 					}
 					break;
 				case "int":

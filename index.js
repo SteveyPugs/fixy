@@ -185,8 +185,8 @@ internals.unparse = function(specs, input, levels){
 									break;
 							}
 						}
-						output = output + value.substring(0, spec.width);
 					}
+          output = output + value.substring(0, spec.width);
 				});
 				counter = counter + 1;
 				if(rowCount !== counter){

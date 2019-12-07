@@ -17,19 +17,34 @@
   },
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
-    "lodash": "^4.12.0",
-    "moment": "^2.15.0",
-    "papaparse": "^4.1.2"
+    "lodash": "4.17.15",
+    "moment": "2.24.0",
+    "papaparse": "4.6.3"
   },
   "devDependencies": {
-    "mocha": "^6.0.2"
+    "eslint": "6.7.2",
+    "eslint-config-standard": "14.1.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-mocha": "6.2.2",
+    "eslint-plugin-node": "10.0.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "husky": "3.1.0",
+    "mocha": "6.2.2"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "lint": "./node_modules/.bin/eslint '**/*.js'"
   },
   "keywords": [
     "Fixed",
     "Format",
     "Parser"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm test"
+    }
+  }
 }

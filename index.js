@@ -75,6 +75,7 @@ internals.parse = function (specs, input) {
 	if (lodash.isEmpty(specs.map)) throw new Error('specs maps is empty')
 	if (lodash.isEmpty(specs.options)) throw new Error('specs options is empty')
 	if (input === '') throw new Error('input is empty')
+	specs = startCheck(specs)
 	var arrayOutput = []
 	var objectOutput = {}
 	var splitInput = input.replace(/\r\n/g, '\n').split('\n')
@@ -224,6 +225,15 @@ internals.unparse = function (specs, input, levels) {
 
 const preprocessCheck = (spec, value) => {
 	return (spec.preprocess) ? spec.preprocess(value) : value
+}
+
+const startCheck = (specs) => {
+	let nextStart = 1
+	specs.map.forEach(col => {
+		if (!col.start) col.start = nextStart
+		nextStart = col.start + col.width
+	})
+	return specs
 }
 
 module.exports = internals

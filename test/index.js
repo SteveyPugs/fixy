@@ -20,6 +20,28 @@ describe('Fixy Tests', function () {
 			}])
 		})
 
+		it('should calculate map[x].start when it is omitted', function () {
+			var test = fixy.parse({
+				map: [{
+					name: 'Age',
+					width: 2,
+					type: 'int'
+				}, {
+					name: 'Name',
+					width: 4,
+					type: 'string'
+				}],
+				options: {
+					fullwidth: 6
+				}
+			}, '30john')
+
+			assert.deepStrictEqual(test, [{
+				Age: 30,
+				Name: 'john'
+			}])
+		})
+
 		it('should return fixed-width-input as array(object)', function () {
 			var test = fixy.parse({
 				map: [{

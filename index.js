@@ -229,9 +229,10 @@ const preprocessCheck = (spec, value) => {
 
 const startCheck = (specs) => {
 	let nextStart = 1
-	specs.map.forEach(col => {
+	specs.map = specs.map.map(col => {
 		if (!col.start) col.start = nextStart
 		nextStart = col.start + col.width
+		return col
 	})
 	return specs
 }

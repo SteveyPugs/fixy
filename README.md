@@ -90,7 +90,7 @@ Fixy is an npm module for parsing fixed formatted strings/files and unparsing an
 
 ##### fixy.unparse | with preprocessing
 
-	let noDecimal = (value) => {
+	let noDecimal = (value, row) => {
 		return `${value}`.replace(/\./, '');
 	}
 
@@ -108,6 +108,29 @@ Fixy is an npm module for parsing fixed formatted strings/files and unparsing an
 	}], [{
 		Name: "Jenny",
 		Balance: 86753.09
+	}]);
+
+##### fixy.unparse | with preprocessing using other row data
+
+	const useOther = (value, row) => {
+		return `${value} ${row.Currency}`;
+	}
+
+	var fixy = fixy.unparse([{
+		name: "Name",
+		width: 10,
+		padding_position: "start",
+		padding_symbol: " "
+	},{
+		name: "Balance",
+		width: 10,
+		padding_position: "start",
+		padding_symbol: "0",
+		preprocess: useOther
+	}], [{
+		Name: "Jenny",
+		Balance: 86753.09,
+		Currency: 'CAD'
 	}]);
 
 ##### fixy.unparse | Multi Level

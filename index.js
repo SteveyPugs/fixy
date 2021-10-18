@@ -157,7 +157,7 @@ internals.unparse = function (specs, input, levels) {
 			lodash.forEach(inputByLevel, function (inp) {
 				lodash.forEach(specsByLevel, function (spec) {
 					var value = String(inp[spec.name])
-					value = preprocessCheck(spec, value)
+					value = preprocessCheck(spec, value, inp)
 
 					var valueLength = value.length
 					if (spec.width - value.length >= 0) {
@@ -193,7 +193,7 @@ internals.unparse = function (specs, input, levels) {
 				var defaultValue = lodash.defaultTo(specs[spec].default, '')
 				value = lodash.defaultTo(value, defaultValue)
 				value = String(value)
-				value = preprocessCheck(specs[spec], value)
+				value = preprocessCheck(specs[spec], value, input[row])
 				var valueLength = value.length
 				if (specs[spec].width - value.length >= 0) {
 					for (var i = 1; i <= specs[spec].width - valueLength; i++) {
@@ -223,8 +223,8 @@ internals.unparse = function (specs, input, levels) {
 	}
 }
 
-const preprocessCheck = (spec, value) => {
-	return (spec.preprocess) ? spec.preprocess(value) : value
+const preprocessCheck = (spec, value, row) => {
+	return (spec.preprocess) ? spec.preprocess(value, row) : value
 }
 
 const startCheck = (specs) => {

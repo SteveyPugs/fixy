@@ -439,6 +439,26 @@ describe('Fixy Tests', function () {
 			}])
 			assert.deepStrictEqual(test, '000031415\n000027182')
 		})
+		it('should allow preprocessing using row data', function () {
+			const preprocessor = (value, row) => {
+				return row.Constant2.toString()
+			}
+
+			var test = fixy.unparse([{
+				name: 'Constant',
+				width: 9,
+				preprocess: preprocessor,
+				padding_position: 'start',
+				padding_symbol: '0'
+			}], [{
+				Constant: 1,
+				Constant2: 2
+			}, {
+				Constant: 1,
+				Constant2: 3
+			}])
+			assert.deepStrictEqual(test, '000000002\n000000003')
+		})
 		it('should return a fixed format when passed an array of data (with objects) padding front w/ spaces', function () {
 			var test = fixy.unparse([{
 				name: 'Age',

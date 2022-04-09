@@ -18,7 +18,7 @@
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
     "lodash": "4.17.21",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "papaparse": "5.2.0"
   },
   "devDependencies": {

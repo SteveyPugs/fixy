@@ -1,7 +1,5 @@
 [![npm version](https://badge.fury.io/js/fixy.svg)](https://badge.fury.io/js/fixy)
-[![Dependency Status](https://david-dm.org/SteveyPugs/fixy.svg)](https://david-dm.org/SteveyPugs/fixy)
-[![devDependency Status](https://david-dm.org/SteveyPugs/fixy/dev-status.svg)](https://david-dm.org/SteveyPugs/fixy#info=devDependencies)
-[![Build Status](https://travis-ci.org/SteveyPugs/fixy.svg?branch=master)](https://travis-ci.org/SteveyPugs/fixy)
+[![Build Status](https://app.travis-ci.com/SteveyPugs/fixy.svg?branch=master)](https://app.travis-ci.com/SteveyPugs/fixy)
 
 # Fixy
 

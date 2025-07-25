@@ -7,66 +7,57 @@ const stringSplice = (str, idx, rem, newStr) => {
 	return str.slice(0, idx) + newStr + str.slice(idx + Math.abs(rem))
 }
 
-const parseCol = (row, map, format) => {
+const parseCol = (row, map, format = 'json') => {
 	const r = {}
-	for (const i of map) {
-		const v = row.substring(i.start - 1, (i.start + i.width - 1)).trim()
+	for (const { name, width, start, type, ...field } of map) {
+		const v = row.substring(start - 1, (start + width - 1)).trim()
 		if (v) {
-			switch (i.type) {
+			switch (type) {
 				case 'date': {
 					try {
 						let parsedDate
-						if (i.inputformat) {
+						if (field.inputformat) {
 							// Convert moment format to date-fns format
-							const dateFnsInputFormat = i.inputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
+							const dateFnsInputFormat = field.inputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
 							parsedDate = parseDate(v, dateFnsInputFormat, new Date())
 						} else {
 							parsedDate = new Date(v)
 						}
 						if (isValid(parsedDate)) {
-							const dateFnsOutputFormat = i.outputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
-							r[i.name] = formatDate(parsedDate, dateFnsOutputFormat)
+							const dateFnsOutputFormat = field.outputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
+							r[name] = formatDate(parsedDate, dateFnsOutputFormat)
 						} else {
-							r[i.name] = null
+							r[name] = null
 						}
 					} catch (e) {
-						r[i.name] = null
+						r[name] = null
 					}
 					break
 				}
 				case 'float': {
-					let precision = 2
-					if (i.percision) { // Support incorrect spelling for backward compatibility
-						precision = i.percision
-					}
-					if (i.precision) {
-						precision = i.precision
-					}
-					const symbol = (i.symbol && format === 'csv') ? i.symbol : ''
+					const precision = field.precision || field.percision || 2 // Support backward compatibility
+					const symbol = (field.symbol && format === 'csv') ? field.symbol : ''
 					if (v.includes('.')) {
-						r[i.name] = symbol + parseFloat(v).toFixed(precision)
+						r[name] = symbol + parseFloat(v).toFixed(precision)
 					} else {
-						r[i.name] = symbol + parseFloat(stringSplice(v, i.width - precision, 0, '.')).toFixed(precision)
+						r[name] = symbol + parseFloat(stringSplice(v, width - precision, 0, '.')).toFixed(precision)
 					}
 					break
 				}
 				case 'int':
-					r[i.name] = parseInt(v)
+					r[name] = parseInt(v)
 					break
 				case 'bool':
-					r[i.name] = false
-					if (v === i.tVal) {
-						r[i.name] = true
-					}
+					r[name] = v === field.tVal
 					break
 				case 'string':
-					r[i.name] = v
+					r[name] = v
 					break
 				default:
-					r[i.name] = v
+					r[name] = v
 			}
 		} else {
-			r[i.name] = null
+			r[name] = null
 		}
 	}
 	return r
@@ -81,10 +72,7 @@ internals.parse = (specs, input) => {
 	specs = startCheck(specs)
 	const arrayOutput = []
 	const objectOutput = {}
-	const splitInput = input.replace(/\r\n/g, '\n').split('\n')
-	if (splitInput.indexOf('') !== -1) {
-		splitInput.splice(splitInput.indexOf(''), 1)
-	}
+	const splitInput = input.replace(/\r\n/g, '\n').split('\n').filter(line => line !== '')
 	for (let idx = 0; idx < splitInput.length; idx++) {
 		const i = splitInput[idx]
 		if (i.length === specs.options.fullwidth && !specs.options.levels) {
@@ -218,18 +206,18 @@ internals.unparse = (specs, input, levels) => {
 	}
 }
 
-const preprocessCheck = (spec, value, row) => {
-	return (spec.preprocess) ? spec.preprocess(value, row) : value
-}
+const preprocessCheck = (spec, value, row) => spec.preprocess ? spec.preprocess(value, row) : value
 
 const startCheck = (specs) => {
 	let nextStart = 1
-	specs.map = specs.map.map(col => {
-		if (!col.start) col.start = nextStart
-		nextStart = col.start + col.width
-		return col
-	})
-	return specs
+	return {
+		...specs,
+		map: specs.map.map(col => {
+			const start = col.start || nextStart
+			nextStart = start + col.width
+			return { ...col, start }
+		})
+	}
 }
 
 module.exports = internals

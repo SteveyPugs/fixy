@@ -1,7 +1,6 @@
 const internals = {}
 const { format: formatDate, parse: parseDate, isValid } = require('date-fns')
 const Papa = require('papaparse')
-const lodash = require('lodash')
 
 // Secure string splice utility function
 const stringSplice = (str, idx, rem, newStr) => {
@@ -10,7 +9,7 @@ const stringSplice = (str, idx, rem, newStr) => {
 
 const parseCol = (row, map, format) => {
 	const r = {}
-	lodash.forEach(map, (i) => {
+	for (const i of map) {
 		const v = row.substring(i.start - 1, (i.start + i.width - 1)).trim()
 		if (v) {
 			switch (i.type) {
@@ -44,7 +43,7 @@ const parseCol = (row, map, format) => {
 						precision = i.precision
 					}
 					const symbol = (i.symbol && format === 'csv') ? i.symbol : ''
-					if (lodash.includes(v, '.')) {
+					if (v.includes('.')) {
 						r[i.name] = symbol + parseFloat(v).toFixed(precision)
 					} else {
 						r[i.name] = symbol + parseFloat(stringSplice(v, i.width - precision, 0, '.')).toFixed(precision)
@@ -69,15 +68,15 @@ const parseCol = (row, map, format) => {
 		} else {
 			r[i.name] = null
 		}
-	})
+	}
 	return r
 }
 
 internals.parse = (specs, input) => {
 	if (typeof specs !== 'object') throw new Error('specs must be an object')
-	if (lodash.isEmpty(specs)) throw new Error('specs cannot be empty')
-	if (lodash.isEmpty(specs.map)) throw new Error('specs.map cannot be empty')
-	if (lodash.isEmpty(specs.options)) throw new Error('specs.options cannot be empty')
+	if (!specs || Object.keys(specs).length === 0) throw new Error('specs cannot be empty')
+	if (!specs.map || specs.map.length === 0) throw new Error('specs.map cannot be empty')
+	if (!specs.options || Object.keys(specs.options).length === 0) throw new Error('specs.options cannot be empty')
 	if (input === '') throw new Error('input cannot be empty')
 	specs = startCheck(specs)
 	const arrayOutput = []
@@ -86,39 +85,41 @@ internals.parse = (specs, input) => {
 	if (splitInput.indexOf('') !== -1) {
 		splitInput.splice(splitInput.indexOf(''), 1)
 	}
-	lodash.forEach(splitInput, (i, idx) => {
+	for (let idx = 0; idx < splitInput.length; idx++) {
+		const i = splitInput[idx]
 		if (i.length === specs.options.fullwidth && !specs.options.levels) {
-			if (!lodash.isEmpty(specs.options.skiplines)) {
-				if (specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1) {
+			if (specs.options.skiplines && specs.options.skiplines.length > 0) {
+				if (!specs.options.skiplines.includes(idx + 1)) {
 					arrayOutput.push(parseCol(i, specs.map, specs.options.format))
 				}
 			} else {
 				arrayOutput.push(parseCol(i, specs.map, specs.options.format))
 			}
 		} else if (specs.options.levels) {
-			const level = lodash.find(specs.options.levels, (v) => idx >= v.start && idx <= v.end)
-			const levelMap = lodash.filter(specs.map, {
-				level: lodash.findKey(specs.options.levels, (v) => idx >= v.start && idx <= v.end)
+			const level = Object.values(specs.options.levels).find(v => idx >= v.start && idx <= v.end)
+			const levelKey = Object.keys(specs.options.levels).find(key => {
+				const v = specs.options.levels[key]
+				return idx >= v.start && idx <= v.end
 			})
+			const levelMap = specs.map.filter(item => item.level === levelKey)
 			if (i.length === level.fullwidth) {
-				// eslint-disable-next-line no-prototype-builtins
-				if (!objectOutput.hasOwnProperty(level.nickname)) {
+				if (!(level.nickname in objectOutput)) {
 					objectOutput[level.nickname] = []
 				}
-				if (specs.options.skiplines !== null) {
-					if (specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1) {
+				if (specs.options.skiplines && specs.options.skiplines.length > 0) {
+					if (!specs.options.skiplines.includes(idx + 1)) {
 						objectOutput[level.nickname].push(parseCol(i, levelMap, specs.options.format))
 					}
 				} else {
 					objectOutput[level.nickname].push(parseCol(i, levelMap, specs.options.format))
 				}
 			} else {
-				throw new Error('Row #' + (parseInt(idx) + 1) + ' does not match fullwidth')
+				throw new Error(`Row #${idx + 1} does not match fullwidth`)
 			}
 		} else {
-			throw new Error('Row #' + (parseInt(idx) + 1) + ' does not match fullwidth')
+			throw new Error(`Row #${idx + 1} does not match fullwidth`)
 		}
-	})
+	}
 	switch (specs.options.format) {
 		case 'csv':
 			if (arrayOutput.length === 0) {
@@ -134,22 +135,22 @@ internals.parse = (specs, input) => {
 }
 
 internals.unparse = (specs, input, levels) => {
-	let output = []
+	let output = ''
 	if (typeof specs !== 'object') throw new Error('specs must be an object')
-	if (lodash.isEmpty(specs)) throw new Error('specs cannot be empty')
+	if (!specs || specs.length === 0) throw new Error('specs cannot be empty')
 	if (input === '') throw new Error('input cannot be empty')
 	let counter = 0
 	if (levels) {
 		let rowCount = 0
-		lodash.forEach(levels, (l) => {
+		for (const l of levels) {
 			const inputByLevel = input[l]
-			rowCount = rowCount + inputByLevel.length
-		})
-		lodash.forEach(levels, (l) => {
+			rowCount += inputByLevel.length
+		}
+		for (const l of levels) {
 			const inputByLevel = input[l]
-			const specsByLevel = lodash.filter(specs, { level: l })
-			lodash.forEach(inputByLevel, (inp) => {
-				lodash.forEach(specsByLevel, (spec) => {
+			const specsByLevel = specs.filter(spec => spec.level === l)
+			for (const inp of inputByLevel) {
+				for (const spec of specsByLevel) {
 					let value = String(inp[spec.name])
 					value = preprocessCheck(spec, value, inp)
 
@@ -170,22 +171,22 @@ internals.unparse = (specs, input, levels) => {
 									break
 							}
 						}
-						output = output + value.substring(0, spec.width)
+						output += value.substring(0, spec.width)
 					}
-				})
-				counter = counter + 1
-				if (rowCount !== counter) {
-					output = output + '\n'
 				}
-			})
-		})
+				counter++
+				if (rowCount !== counter) {
+					output += '\n'
+				}
+			}
+		}
 		return output
 	} else {
 		for (const row in input) {
 			for (const spec in specs) {
 				let value = input[row][specs[spec].name]
-				const defaultValue = lodash.defaultTo(specs[spec].default, '')
-				value = lodash.defaultTo(value, defaultValue)
+				const defaultValue = specs[spec].default != null ? specs[spec].default : ''
+				value = value != null ? value : defaultValue
 				value = String(value)
 				value = preprocessCheck(specs[spec], value, input[row])
 				const valueLength = value.length
@@ -206,11 +207,11 @@ internals.unparse = (specs, input, levels) => {
 						}
 					}
 				}
-				output = output + value.substring(0, specs[spec].width)
+				output += value.substring(0, specs[spec].width)
 			}
-			counter = counter + 1
+			counter++
 			if (input.length !== counter) {
-				output = output + '\n'
+				output += '\n'
 			}
 		}
 		return output

@@ -1,20 +1,20 @@
-var internals = {}
-var { format: formatDate, parse: parseDate, isValid } = require('date-fns')
-var Papa = require('papaparse')
-var lodash = require('lodash')
+const internals = {}
+const { format: formatDate, parse: parseDate, isValid } = require('date-fns')
+const Papa = require('papaparse')
+const lodash = require('lodash')
 
 // Secure string splice utility function
 const stringSplice = (str, idx, rem, newStr) => {
 	return str.slice(0, idx) + newStr + str.slice(idx + Math.abs(rem))
 }
 
-var parseCol = function (row, map, format) {
-	var r = {}
-	lodash.forEach(map, function (i) {
-		var v = row.substring(i.start - 1, (i.start + i.width - 1)).trim()
+const parseCol = (row, map, format) => {
+	const r = {}
+	lodash.forEach(map, (i) => {
+		const v = row.substring(i.start - 1, (i.start + i.width - 1)).trim()
 		if (v) {
 			switch (i.type) {
-				case 'date':
+				case 'date': {
 					try {
 						let parsedDate
 						if (i.inputformat) {
@@ -34,24 +34,23 @@ var parseCol = function (row, map, format) {
 						r[i.name] = null
 					}
 					break
-				case 'float':
-					var precision = 2
+				}
+				case 'float': {
+					let precision = 2
 					if (i.percision) { // Support incorrect spelling for backward compatibility
 						precision = i.percision
 					}
 					if (i.precision) {
 						precision = i.precision
 					}
-					var symbol = ''
-					if (i.symbol && format === 'csv') {
-						symbol = i.symbol
-					}
+					const symbol = (i.symbol && format === 'csv') ? i.symbol : ''
 					if (lodash.includes(v, '.')) {
 						r[i.name] = symbol + parseFloat(v).toFixed(precision)
 					} else {
 						r[i.name] = symbol + parseFloat(stringSplice(v, i.width - precision, 0, '.')).toFixed(precision)
 					}
 					break
+				}
 				case 'int':
 					r[i.name] = parseInt(v)
 					break
@@ -74,20 +73,20 @@ var parseCol = function (row, map, format) {
 	return r
 }
 
-internals.parse = function (specs, input) {
-	if (typeof (specs) !== 'object') throw new Error('specs is not an array')
-	if (lodash.isEmpty(specs)) throw new Error('specs is empty')
-	if (lodash.isEmpty(specs.map)) throw new Error('specs maps is empty')
-	if (lodash.isEmpty(specs.options)) throw new Error('specs options is empty')
-	if (input === '') throw new Error('input is empty')
+internals.parse = (specs, input) => {
+	if (typeof specs !== 'object') throw new Error('specs must be an object')
+	if (lodash.isEmpty(specs)) throw new Error('specs cannot be empty')
+	if (lodash.isEmpty(specs.map)) throw new Error('specs.map cannot be empty')
+	if (lodash.isEmpty(specs.options)) throw new Error('specs.options cannot be empty')
+	if (input === '') throw new Error('input cannot be empty')
 	specs = startCheck(specs)
-	var arrayOutput = []
-	var objectOutput = {}
-	var splitInput = input.replace(/\r\n/g, '\n').split('\n')
+	const arrayOutput = []
+	const objectOutput = {}
+	const splitInput = input.replace(/\r\n/g, '\n').split('\n')
 	if (splitInput.indexOf('') !== -1) {
 		splitInput.splice(splitInput.indexOf(''), 1)
 	}
-	lodash.forEach(splitInput, function (i, idx) {
+	lodash.forEach(splitInput, (i, idx) => {
 		if (i.length === specs.options.fullwidth && !specs.options.levels) {
 			if (!lodash.isEmpty(specs.options.skiplines)) {
 				if (specs.options.skiplines.indexOf(parseInt(idx) + 1) === -1) {
@@ -97,17 +96,9 @@ internals.parse = function (specs, input) {
 				arrayOutput.push(parseCol(i, specs.map, specs.options.format))
 			}
 		} else if (specs.options.levels) {
-			var level = lodash.find(specs.options.levels, function (v) {
-				if (idx >= v.start && idx <= v.end) {
-					return true
-				}
-			})
-			var levelMap = lodash.filter(specs.map, {
-				level: lodash.findKey(specs.options.levels, function (v) {
-					if (idx >= v.start && idx <= v.end) {
-						return true
-					}
-				})
+			const level = lodash.find(specs.options.levels, (v) => idx >= v.start && idx <= v.end)
+			const levelMap = lodash.filter(specs.map, {
+				level: lodash.findKey(specs.options.levels, (v) => idx >= v.start && idx <= v.end)
 			})
 			if (i.length === level.fullwidth) {
 				// eslint-disable-next-line no-prototype-builtins
@@ -142,33 +133,31 @@ internals.parse = function (specs, input) {
 	}
 }
 
-internals.unparse = function (specs, input, levels) {
-	var output = []
-	if (typeof (specs) !== 'object') throw new Error('specs is not an array')
-	if (lodash.isEmpty(specs)) throw new Error('specs is empty')
-	if (input === '') throw new Error('input is empty')
-	var counter = 0
+internals.unparse = (specs, input, levels) => {
+	let output = []
+	if (typeof specs !== 'object') throw new Error('specs must be an object')
+	if (lodash.isEmpty(specs)) throw new Error('specs cannot be empty')
+	if (input === '') throw new Error('input cannot be empty')
+	let counter = 0
 	if (levels) {
-		var rowCount = 0
-		lodash.forEach(levels, function (l) {
-			var inputByLevel = input[l]
+		let rowCount = 0
+		lodash.forEach(levels, (l) => {
+			const inputByLevel = input[l]
 			rowCount = rowCount + inputByLevel.length
 		})
-		lodash.forEach(levels, function (l) {
-			var inputByLevel = input[l]
-			var specsByLevel = lodash.filter(specs, {
-				level: l
-			})
-			lodash.forEach(inputByLevel, function (inp) {
-				lodash.forEach(specsByLevel, function (spec) {
-					var value = String(inp[spec.name])
+		lodash.forEach(levels, (l) => {
+			const inputByLevel = input[l]
+			const specsByLevel = lodash.filter(specs, { level: l })
+			lodash.forEach(inputByLevel, (inp) => {
+				lodash.forEach(specsByLevel, (spec) => {
+					let value = String(inp[spec.name])
 					value = preprocessCheck(spec, value, inp)
 
-					var valueLength = value.length
+					const valueLength = value.length
 					if (spec.width - value.length >= 0) {
-						for (var i = 1; i <= spec.width - valueLength; i++) {
-							var symbol = spec.padding_symbol ? spec.padding_symbol : ' '
-							if (symbol.length > 1) throw new Error('padding_symbol can not have length > 1')
+						for (let i = 1; i <= spec.width - valueLength; i++) {
+							const symbol = spec.padding_symbol || ' '
+							if (symbol.length > 1) throw new Error('padding_symbol cannot have length > 1')
 							switch (spec.padding_position) {
 								case 'start':
 									value = symbol + value
@@ -192,18 +181,18 @@ internals.unparse = function (specs, input, levels) {
 		})
 		return output
 	} else {
-		for (var row in input) {
-			for (var spec in specs) {
-				var value = input[row][specs[spec].name]
-				var defaultValue = lodash.defaultTo(specs[spec].default, '')
+		for (const row in input) {
+			for (const spec in specs) {
+				let value = input[row][specs[spec].name]
+				const defaultValue = lodash.defaultTo(specs[spec].default, '')
 				value = lodash.defaultTo(value, defaultValue)
 				value = String(value)
 				value = preprocessCheck(specs[spec], value, input[row])
-				var valueLength = value.length
+				const valueLength = value.length
 				if (specs[spec].width - value.length >= 0) {
-					for (var i = 1; i <= specs[spec].width - valueLength; i++) {
-						var symbol = specs[spec].padding_symbol ? specs[spec].padding_symbol : ' '
-						if (symbol.length > 1) throw new Error('padding_symbol can not have length > 1')
+					for (let i = 1; i <= specs[spec].width - valueLength; i++) {
+						const symbol = specs[spec].padding_symbol || ' '
+						if (symbol.length > 1) throw new Error('padding_symbol cannot have length > 1')
 						switch (specs[spec].padding_position) {
 							case 'start':
 								value = symbol + value

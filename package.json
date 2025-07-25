@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/SteveyPugs/fixy",
   "dependencies": {
-    "lodash": "4.17.21",
-    "moment": "2.29.4",
-    "papaparse": "5.2.0"
+    "date-fns": "^2.30.0",
+    "lodash": "^4.17.21",
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
     "eslint": "6.7.2",

@@ -1,11 +1,11 @@
 var internals = {}
-var moment = require('moment')
+var { format: formatDate, parse: parseDate, isValid } = require('date-fns')
 var Papa = require('papaparse')
 var lodash = require('lodash')
 
-// eslint-disable-next-line no-extend-native
-String.prototype.splice = function (idx, rem, str) {
-	return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
+// Secure string splice utility function
+const stringSplice = (str, idx, rem, newStr) => {
+	return str.slice(0, idx) + newStr + str.slice(idx + Math.abs(rem))
 }
 
 var parseCol = function (row, map, format) {
@@ -15,18 +15,23 @@ var parseCol = function (row, map, format) {
 		if (v) {
 			switch (i.type) {
 				case 'date':
-					if (i.inputformat) {
-						if (moment(v, i.inputformat).isValid()) {
-							r[i.name] = moment(v, i.inputformat).format(i.outputformat)
+					try {
+						let parsedDate
+						if (i.inputformat) {
+							// Convert moment format to date-fns format
+							const dateFnsInputFormat = i.inputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
+							parsedDate = parseDate(v, dateFnsInputFormat, new Date())
+						} else {
+							parsedDate = new Date(v)
+						}
+						if (isValid(parsedDate)) {
+							const dateFnsOutputFormat = i.outputformat.replace(/YYYY/g, 'yyyy').replace(/MM/g, 'MM').replace(/DD/g, 'dd')
+							r[i.name] = formatDate(parsedDate, dateFnsOutputFormat)
 						} else {
 							r[i.name] = null
 						}
-					} else {
-						if (moment(v).isValid()) {
-							r[i.name] = moment(v).format(i.outputformat)
-						} else {
-							r[i.name] = null
-						}
+					} catch (e) {
+						r[i.name] = null
 					}
 					break
 				case 'float':
@@ -44,7 +49,7 @@ var parseCol = function (row, map, format) {
 					if (lodash.includes(v, '.')) {
 						r[i.name] = symbol + parseFloat(v).toFixed(precision)
 					} else {
-						r[i.name] = symbol + parseFloat(v.splice(i.width - precision, 0, '.')).toFixed(precision)
+						r[i.name] = symbol + parseFloat(stringSplice(v, i.width - precision, 0, '.')).toFixed(precision)
 					}
 					break
 				case 'int':
